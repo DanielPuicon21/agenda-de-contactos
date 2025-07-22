@@ -10,15 +10,18 @@ interface ContactFormProps {
 
 function ContactForm({ onSubmit, editingContact, onUpdate, onCancelEdit }: ContactFormProps) {
   const [name, setName] = useState('')
+  const [lastName, setlastName] = useState('') // nuevo estado
   const [phone, setPhone] = useState('')
 
-  // Si se está editando un contacto, llenar los campos
+  // Cargar datos si estamos editando
   useEffect(() => {
     if (editingContact) {
       setName(editingContact.name)
+      setlastName(editingContact.lastName)
       setPhone(editingContact.phone)
     } else {
       setName('')
+      setlastName('')
       setPhone('')
     }
   }, [editingContact])
@@ -26,21 +29,31 @@ function ContactForm({ onSubmit, editingContact, onUpdate, onCancelEdit }: Conta
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!name.trim() || !phone.trim()) {
+    if (!name.trim() || !lastName.trim() || !phone.trim()) {
       alert('Por favor complete todos los campos')
       return
     }
 
     if (editingContact) {
-      // Actualizar contacto existente
-      onUpdate({ ...editingContact, name: name.trim(), phone: phone.trim() })
+      // Actualizar contacto
+      onUpdate({
+        ...editingContact,
+        name: name.trim(),
+        lastName: lastName.trim(),
+        phone: phone.trim()
+      })
     } else {
       // Crear nuevo contacto
-      onSubmit({ name: name.trim(), phone: phone.trim() })
+      onSubmit({
+        name: name.trim(),
+        lastName: lastName.trim(),
+        phone: phone.trim()
+      })
     }
 
-    // Limpiar formulario
+    // Limpiar campos
     setName('')
+    setlastName('')
     setPhone('')
   }
 
@@ -54,6 +67,18 @@ function ContactForm({ onSubmit, editingContact, onUpdate, onCancelEdit }: Conta
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Ingrese el nombre"
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="lastName">Apellido:</label>
+        <input
+          type="text"
+          id="lastName"
+          value={lastName}
+          onChange={(e) => setlastName(e.target.value)}
+          placeholder="Ingrese el apellido"
           required
         />
       </div>

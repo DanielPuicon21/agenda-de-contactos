@@ -7,13 +7,22 @@ import ThemeToggle from './components/ThemeToggle'
 import './App.css'
 
 function App() {
-  const [contacts, setContacts] = useState<Contact[]>([])
+  const [contacts, setContacts] = useState<Contact[]>(() => {
+    const storedContacts = localStorage.getItem('contacts')
+    return storedContacts ? JSON.parse(storedContacts) : []
+  })
+
   const [searchTerm, setSearchTerm] = useState('')
   const [editingContact, setEditingContact] = useState<Contact | null>(null)
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark'
   })
 
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts))
+  }, [contacts])
+
+  // Manejo de tema oscuro
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('dark')
@@ -49,10 +58,12 @@ function App() {
     setEditingContact(null)
   }
 
+  //  Filtro por nombre, apellido y teléfono
   const filteredContacts = contacts.filter((contact) => {
     const search = searchTerm.toLowerCase()
     return (
       contact.name.toLowerCase().includes(search) ||
+      contact.lastName.toLowerCase().includes(search) ||
       contact.phone.includes(search)
     )
   })
